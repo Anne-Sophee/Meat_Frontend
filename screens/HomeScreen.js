@@ -60,11 +60,7 @@ function HomeScreen(props) {
         let rawResponse = await fetch(`https://newmeat.herokuapp.com/search-table`);
         let response = await rawResponse.json();
         setTableDataList(response.result)
-
-        //sauvegarde du tableId en local (non crypté) + JSON.stringify pour convertir en json lors de la sauvegarde
-        let {tableId} = rawResponse.result._id;
-        await AsyncStorage.setItem('tableId', JSON.stringify(tableId));
-        props.saveTableId(tableDataResponse.newTable._id);
+        console.log('response.result:', response.result[1]._id)
       };
       getTableList()
     }
@@ -117,7 +113,6 @@ function HomeScreen(props) {
 
     // redirection vers la screen adaptée en fonction du statut du user
     const onCardClick = () => {
-      props.saveTableId(e._id);
 
       let guestCheck = e.guests.some(el => el.token === props.userToken)
       if (e.planner === props.userToken || guestCheck === true) {
@@ -133,7 +128,7 @@ function HomeScreen(props) {
 
     return(
 
-      <Card key={i} onPress={() => {onCardClick()}} style={{backgroundColor: '#ffffed'}}>
+      <Card key={i} onPress={() => {onCardClick(); props.saveTableId(e._id)}} style={{backgroundColor: '#ffffed'}}>
         <Card.Content style={styles.event}>
 
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -352,7 +347,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
       saveTableId: function (tableId) {
-          dispatch({ type: "saveTableId", tableId: tableId })
+          dispatch({ type: "registerTableId", tableId: tableId })
       },
   }
 }

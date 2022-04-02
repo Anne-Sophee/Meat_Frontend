@@ -19,6 +19,7 @@ function TableScreen(props) {
   const [planner, setPlanner] = useState('');
   const [plannerAvatar, setPlannerAvatar] = useState('');
   const isFocused = useIsFocused();
+  const [keepTableId, setKeepTableId] = useState([]);
 
 
 
@@ -31,13 +32,27 @@ function TableScreen(props) {
     setTableData(tableResponse.result);
     console.log(tableResponse.result)
     setGuestList(tableResponse.result.guests);
-    console.log(tableResponse.result.guests)
     setPlanner(tableResponse.planner);
-    console.log(tableResponse.planner)
     setPlannerAvatar(tableResponse.planner.avatar);
-    console.log(tableResponse.planner.avatar)
 
-  }, [])
+    let tableData = response.result;
+        for (var i = 0; i < tableData.length; i++) {
+          var newTableId = tableData[i]._id;
+        }
+    setKeepTableId(newTableId);
+
+  }, [keepTableId])
+
+
+
+  const leaveTable = async () => {
+    
+    var tableDataResponse = await fetch(`http://newmeat.herokuapp.com/delete-guest/${props.tableId}/${props.userToken}`,{
+      method: 'DELETE' 
+    });
+
+    props.navigation.navigate('Home')
+};
 
 
 
@@ -45,7 +60,8 @@ function TableScreen(props) {
   // ---------AFFICHAGE AUTOMATIQUE DES INFORMATIONS DE LA TABLE---------
   //informations sur les participants
   var tableInfo = tableData;
-  var plannerPicture = <Avatar.Image size={30} style={styles.account} source={(plannerAvatar) ? { uri: plannerAvatar } : require("../assets/avatar.png")} />
+  var plannerInfo = planner;
+  var plannerPicture = <Avatar.Image size={30} style={styles.account} source={(plannerPicture) ? {uri: plannerPicture} : require("../assets/avatar.png")} />
 
   let avatarList = guestList.map((e, i) => {
     return (
@@ -54,6 +70,12 @@ function TableScreen(props) {
   })
 
   var guestCount = guestList.length + 1;
+
+  // affichage de la date et heure de l'évènement
+  let dateParse = new Date(tableInfo.date);
+  let formattedDate = dateParse.toLocaleDateString("fr-FR", {timeZone: "UTC", weekday: "long", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit"});
+  formattedDate = formattedDate[0].toUpperCase() + formattedDate.slice(1)
+  var redirect = false
 
   //informations sur le nombre de participants
   var tabCapacity = [];
@@ -110,29 +132,20 @@ function TableScreen(props) {
 
                         <View>
                             <View style={{alignItems: 'center', marginTop: 35, marginBottom: 35}}>
-                                <Text style={{fontWeight: 'bold', fontSize: 18, marginBottom: 5}}>{tableInfo.title}</Text>
-                                <Text style={{fontSize: 14}}>{tableInfo.date}</Text>
+                                <Text style={{fontWeight: 'bold', fontSize: 18, marginBottom: 5}}>Table de {plannerInfo.firstname}</Text>
+                                <Text style={{fontSize: 14}}>{formattedDate}</Text>
                             </View>
                         </View>
 
                         <View style={{flexDirection: 'row'}}>
                             <View style={{marginRight: 10}}>
-                                <Text style={{fontWeight: 'bold', marginBottom: 5}}>M.eaters : 3/6</Text>
+                                <Text style={{fontWeight: 'bold', marginBottom: 5}}>M.eaters : {guestCount}/{tableInfo.capacity}</Text>
                                 <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: 5}}>
-                                    <Avatar.Icon size={30} style={styles.account} color='#0E9BA4' icon='account' />
-                                    <Avatar.Icon size={30} style={styles.account} color='#0E9BA4' icon='arrow-left-circle' />
-                                    <Avatar.Icon size={30} style={styles.account} color='#0E9BA4' icon='currency-eur' />
-                                    <Avatar.Icon size={30} style={styles.account} color='#0E9BA4' icon='seat' />
-                                    <Avatar.Icon size={30} style={styles.account} color='#0E9BA4' icon='home' />
-                                    <Avatar.Icon size={30} style={styles.account} color='#0E9BA4' icon='pencil' />
+                                  {plannerPicture}{avatarList}{tabCapacity}
                                 </View>
 
                                 <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: 5}}>
-                                    <Text style={{fontWeight: 'bold'}}>Budget :</Text>
-                                    <Avatar.Icon size={30} style={styles.account} color='#0E9BA4' icon='calendar-month'/>
-                                    <Avatar.Icon size={30} style={styles.account} color='#0E9BA4' icon='plus-circle'/>
-                                    <Avatar.Icon size={30} style={styles.account} color='#0E9BA4' icon='cake-variant'/>
-                                    <Avatar.Icon size={30} style={styles.account} color='#38b000' icon='currency-eur'/>
+                                    <Text style={{fontWeight: 'bold'}}>Budget : {bugdetInfo}</Text>
                                 </View>
 
                                 <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: 5}}>
@@ -142,21 +155,21 @@ function TableScreen(props) {
 
                                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                     <Avatar.Icon size={30} style={styles.account} color='#0E9BA4' icon='food-fork-drink'/>
-                                    <Text style={{fontWeight: 'bold'}}>Japonais</Text>
+                                    <Text style={{fontWeight: 'bold'}}>{tableInfo.foodType}</Text>
                                 </View>
 
                                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                     <Avatar.Icon size={30} style={styles.account} color='#0E9BA4' icon='cake-variant'/>
-                                    <Text style={{fontWeight: 'bold'}}>25 - 30 ans</Text>
+                                    <Text style={{fontWeight: 'bold'}}>{tableInfo.age}</Text>
                                 </View>
 
                                 <StatusBar style="auto" hidden={false} />
                             </View>
 
                             <View style={{borderStyle: 'solid', borderWidth: 1, borderColor: '#FFC960'}}>
-                                <Avatar.Image style={{flex: 1, width: '100%', borderBottomWidth: 1, borderRadius: 0, borderBottomColor: '#FFC960', backgroundColor: '#FFFFFF'}}/>
-                                <Text style={{marginTop: 5, marginHorizontal: 2, color: '#0E9BA4', fontWeight: 'bold'}}>Taiyo Ramen</Text>
-                                <Text style={{marginTop: 3, marginHorizontal: 2, fontSize: 9, fontWeight: 'bold', fontStyle: 'italic'}}>169 rue Saint-Martin, 75003 Paris</Text>
+                                <Avatar.Image style={{flex: 1, width: 150, borderBottomWidth: 1, borderRadius: 0, borderBottomColor: '#FFC960', backgroundColor: '#FFFFFF'}} source={{uri: cardImage}}/>
+                                <Text style={{marginTop: 5, marginHorizontal: 2, color: '#0E9BA4', fontWeight: 'bold'}}>{tableInfo.restaurantName}</Text>
+                                <Text style={{marginTop: 3, marginHorizontal: 2, fontSize: 9, fontWeight: 'bold', fontStyle: 'italic'}}>{tableInfo.restaurantAddress}</Text>
                                 <Text style={{marginTop: 3, marginHorizontal: 2, marginBottom: 5, fontSize: 9, fontWeight: 'bold', color: '#3382F0'}}>(voir plan)</Text>
                             </View>
                         </View>
@@ -164,8 +177,8 @@ function TableScreen(props) {
 
 
                     <View style={{alignItems: 'center'}}>
-                        <Text style={{fontWeight: 'bold', color: 'grey', marginBottom: 5}}>Et si on parlait de Naruto ?</Text>
-                        <Text style={{color: 'grey', textAlign: 'justify', marginHorizontal: 15}}>Je suis un fan de manga mais ne vous inquiétez pas je peux aussi bien discuter art ou politique !</Text>
+                        <Text style={{fontWeight: 'bold', color: 'grey', marginBottom: 5}}>{tableInfo.title}</Text>
+                        <Text style={{color: 'grey', textAlign: 'justify', marginHorizontal: 15}}>{tableInfo.presentation}</Text>
                     </View>
 
                     <View style={styles.container}>
@@ -217,7 +230,10 @@ const styles = ({
 
 // fonction qui rappel l'information définie dans le réduceur
 function mapStateToProps(state) {
-  return { tableId: state.tableId, userToken: state.userToken }
+  return { 
+    tableId: state.tableId, 
+    userToken: state.userToken
+  }
 }
 
 // composant conteneur

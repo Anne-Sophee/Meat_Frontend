@@ -129,10 +129,6 @@ function CreateScreen(props) {
     
     //variable qui transforme la chaîne de caractère du fetch en objet javascript 
     var tableDataResponse = await rawTableData.json();
-
-    //sauvegarde du token en local (non crypté) + JSON.stringify pour convertir en json lors de la sauvegarde
-    let {tableId} = tableDataResponse.result._id
-    await AsyncStorage.setItem('tableId', JSON.stringify(tableId))
     props.sendTableId(tableDataResponse.newTable._id);
     props.navigation.navigate('MyTable');
     }
