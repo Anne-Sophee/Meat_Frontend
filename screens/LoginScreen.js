@@ -1,9 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar'; 
 import { Text, View, Image, TouchableOpacity, KeyboardAvoidingView, Keyboard, ScrollView, StyleSheet } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { useFonts, Montserrat_400Regular_Italic } from '@expo-google-fonts/montserrat';
-import LoadingScreen from './LoadingScreen';
+import HomeScreen from './HomeScreen';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { connect } from 'react-redux';
@@ -22,6 +22,19 @@ function LoginScreen(props) {
   const [errorMessage, setErrorMessage] = useState('');
   const [errorPassword, setErrorPassword] = useState('');
   const [hidden, setHidden] = useState(true);
+
+
+  // ---------CONNEXON AUTOMATIQUE---------
+  //Vérifie l'existence d'un userToken et redirige vers home si présence userToken
+  useEffect(() => {
+    ( () => { AsyncStorage.getItem("userToken", function(error, data) {
+      let userData = JSON.parse(data);
+        if (userData !== null) {
+        props.navigation.navigate("Home");
+        props.sendUserToken(userData);
+        }
+    })})()
+  },[])
 
 
 
@@ -68,7 +81,7 @@ function LoginScreen(props) {
 
   if(!fontsLoaded){
     //tant que notre écriture n'est pas chargée, on attend
-    return <LoadingScreen/>;
+    return <HomeScreen/>;
   } else {
 
 

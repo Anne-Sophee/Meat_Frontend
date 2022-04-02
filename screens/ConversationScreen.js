@@ -8,7 +8,7 @@ import Appbarmodel from '../navigation/appbar';
 
 
 
-export default (MessageScreen) => {
+export default (ConversationScreen) => {
 
   const navigation = useNavigation();
 

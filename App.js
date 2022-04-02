@@ -14,10 +14,11 @@ import CreateScreen from './screens/CreateScreen';
 import AccountScreen from './screens/AccountScreen';
 import EventScreen from './screens/EventScreen';
 import MessageScreen from './screens/MessageScreen';
+import TableScreen from './screens/TableScreen';
+import ConversationScreen from './screens/ConversationScreen';
+import BuddyScreen from './screens/BuddyScreen';
 
 import userToken from './reducers/userToken';
-import Appbarmodel from './navigation/appbar';
-
 
 export default function App() {
 
@@ -44,9 +45,12 @@ export default function App() {
           <Stack.Screen name="Home" component={HomeScreen} options={{title: 'Tables disponibles', headerStyle: {backgroundColor: '#FFC960'}, headerTitleStyle: {fontSize: 23, color: '#0E9BA4'}, headerLeft: null}} />
           <Stack.Screen name="Join" component={JoinScreen} options={{title: 'Rejoindre une table', headerStyle: {backgroundColor: '#FFC960'}, headerTitleStyle: {fontSize: 23, color: '#0E9BA4'}, headerLeft: null}} />
           <Stack.Screen name="Create" component={CreateScreen} options={{title: 'Créer une table', headerStyle: {backgroundColor: '#FFC960'}, headerTitleStyle: {fontSize: 23, color: '#0E9BA4'}, headerLeft: null}} />
-          <Stack.Screen name="Account" component={AccountScreen} options={{title: 'Mon profil', headerStyle: {backgroundColor: '#FFC960'}, headerTitleStyle: {fontSize: 23, color: '#0E9BA4'}, headerLeft: null}} />
+          <Stack.Screen name="MyTable" component={TableScreen} options={{title: 'Ma table', headerStyle: {backgroundColor: '#FFC960'}, headerTitleStyle: {fontSize: 23, color: '#0E9BA4'}, headerLeft: null}} />
           <Stack.Screen name="Event" component={EventScreen} options={{title: 'Mes évènements', headerStyle: {backgroundColor: '#FFC960'}, headerTitleStyle: {fontSize: 23, color: '#0E9BA4'}, headerLeft: null}} />
           <Stack.Screen name="Message" component={MessageScreen} options={{title: 'Mes messages', headerStyle: {backgroundColor: '#FFC960'}, headerTitleStyle: {fontSize: 23, color: '#0E9BA4'}, headerLeft: null}} />
+          <Stack.Screen name="Conversation" component={ConversationScreen} options={{title: 'Ma conversation', headerStyle: {backgroundColor: '#FFC960'}, headerTitleStyle: {fontSize: 23, color: '#0E9BA4'}, headerLeft: null}} />
+          <Stack.Screen name="Buddies" component={BuddyScreen} options={{title: 'Mes buddies', headerStyle: {backgroundColor: '#FFC960'}, headerTitleStyle: {fontSize: 23, color: '#0E9BA4'}, headerLeft: null}} />
+          <Stack.Screen name="Account" component={AccountScreen} options={{title: 'Mon profil', headerStyle: {backgroundColor: '#FFC960'}, headerTitleStyle: {fontSize: 23, color: '#0E9BA4'}, headerLeft: null}} />
         </Stack.Navigator>
       </NavigationContainer>
       </StoreProvider>

@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 
 
 
-function JoinScreen(props) {
+function TableScreen(props) {
 
   const navigation = useNavigation();
   
@@ -16,23 +16,28 @@ function JoinScreen(props) {
   // ---------VARIABLE D'ETAT INPUT---------
   const [tableData, setTableData] = useState(['']);
   const [guestList, setGuestList] = useState(['']);
+  const [planner, setPlanner] = useState('');
   const [plannerAvatar, setPlannerAvatar] = useState('');
   const isFocused = useIsFocused();
-
 
 
 
   // ---------RÉCCUPÉRATION DES DONNÉES DE LA TABLE SÉLECTIONNÉES---------
   useEffect(async () => {
     
-    let tableDataResponse = await fetch(`https://newmeat.herokuapp.com/join-table/${props.tableId}`);
+    let tableDataResponse = await fetch(`https://newmeat.herokuapp.com/join-table/${props.tableId}/${props.userToken}`);
+
     let tableResponse = await tableDataResponse.json();
     setTableData(tableResponse.result);
+    console.log(tableResponse.result)
     setGuestList(tableResponse.result.guests);
-    setPlannerAvatar(response.planner.avatar); 
+    console.log(tableResponse.result.guests)
+    setPlanner(tableResponse.planner);
+    console.log(tableResponse.planner)
+    setPlannerAvatar(tableResponse.planner.avatar);
+    console.log(tableResponse.planner.avatar)
 
-  }, [isFocused]
-  )
+  }, [])
 
 
 
@@ -92,20 +97,6 @@ function JoinScreen(props) {
 
 
 
-  // ---------ENVOI DES DONNÉES TABLE/USER QUI REJOINT UNE TABLE---------
-  var handleJoinTable = async () => {
-
-    var tableDataRaw = await fetch(`https://newmeat.herokuapp.com/enter-table`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `id=${props.tableId}&token=${props.userToken}`
-    });
-
-    props.navigation.navigate('MyTable');
-  }
-
-
-
 
     return (
 
@@ -120,7 +111,7 @@ function JoinScreen(props) {
                         <View>
                             <View style={{alignItems: 'center', marginTop: 35, marginBottom: 35}}>
                                 <Text style={{fontWeight: 'bold', fontSize: 18, marginBottom: 5}}>{tableInfo.title}</Text>
-                                <Text style={{fontSize: 14}}>Vendredi 21 janvier 2022 à 12h15</Text>
+                                <Text style={{fontSize: 14}}>{tableInfo.date}</Text>
                             </View>
                         </View>
 
@@ -183,7 +174,7 @@ function JoinScreen(props) {
                           labelStyle={{color: '#FFC960', fontSize: 22, fontWeight: 'bold'}}
                           uppercase={false}
                           mode="contained"
-                          onPress={handleJoinTable()}>
+                          onPress={console.log('ok test TableScreen')}>
                           Rejoindre la table
                         </Button>
                     </View>
@@ -233,4 +224,4 @@ function mapStateToProps(state) {
 export default connect(
   mapStateToProps,
   null
-)(JoinScreen);
+)(TableScreen);

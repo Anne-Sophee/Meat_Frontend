@@ -2,8 +2,6 @@ import React, { useRef, useState } from 'react';
 import { StatusBar } from 'expo-status-bar'; 
 import { Text, View, ScrollView, KeyboardAvoidingView, TouchableOpacity, Keyboard, Platform } from 'react-native';
 import { TextInput, Button, Avatar } from 'react-native-paper';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
 import DatePicker from 'react-native-datepicker';
 import moment from 'moment';
 import { connect } from 'react-redux';
@@ -15,11 +13,9 @@ import { Dropdown } from 'react-native-element-dropdown';
 // composant de présentation
 function CreateScreen(props) {
 
-  const navigation = useNavigation();
-
-
   // ---------VARIABLE D'ETAT INPUT---------
-  const [dateOfEvent, setDateOfEvent] = useState(new(Date));
+  const [dateOfEvent, setDateOfEvent] = useState(new Date(Date.now()));
+  const [dateValue, setDateValue] = useState(false);
   const [titleEvent, setTitleEvent] = useState('');
   const [restaurantName, setRestaurantName] = useState('');
   const [restaurantAddress, setRestaurantAddress] = useState('');
@@ -27,6 +23,7 @@ function CreateScreen(props) {
   const [showDropDown, setShowDropDown] = useState(false);
   const [presentationEvent, setPresentationEvent] = useState('');
   const [ageRange, setAgeRange] = useState('');
+  const [planner, setPlanner] = useState(props.userToken);
 
 
   // ---------LISTES DÉROULANTES INPUT---------
@@ -102,122 +99,42 @@ function CreateScreen(props) {
 
 
 
-
-
-
-
-
-
-
-
   // ---------COLLECTE DES DONNEES INPUT---------
-  const handleSignUp = async () => {
+  const createTable = async () => {
+
+    //alerte d'erreurs en cas de champs vides
+    if (dateOfEvent === false) {
+      alert("Veuillez renseigner la date et l'heure !")
+    } else if (titleEvent === "") {
+      alert("Veuillez renseigner le titre de l'évènement !")
+    } else if (restaurantName === "") {
+      alert("Veuillez renseigner le nom du restaurant !")
+    } else if (restaurantAddress === "") {
+      alert("Veuillez renseigner l'adresse du restaurant !")
+    } else if (foodType === "") {
+      alert("Veuillez renseigner le type de cuisine !")
+    } else if (presentationEvent === "") {
+      alert("Veuillez ajouter une présentation de l'évènement !")
+    } else if (ageRange === "") {
+      alert("Veuillez sélectionner une tranche d'âge !")
+    } else {
+
 
     //chaîne de caractère renvoyée par le fetch et stockée dans la variable data
-    var rawData = await fetch('https://newmeat.herokuapp.com/users/register', {
+    var rawTableData = await fetch('https://newmeat.herokuapp.com/add-table', {
       method: 'POST',
       headers: {'Content-Type':'application/x-www-form-urlencoded'},
-      body: `avatar=${avatarUri}&email=${email}&password=${password}&lastname=${lastname}&firstname=${firstname}&address=${address}&phoneNumber=${phoneNumber}&dateOfBirth=${dateOfBirth}&gender=${value}`
+      body: `dateOfEvent=${dateOfEvent}&titleEvent=${titleEvent}&restaurantName=${restaurantName}&restaurantAddress=${restaurantAddress}&foodType=${foodType}&presentationEvent=${presentationEvent}&ageRange=${ageRange}&capacity=${capacity}&budget=${budget}&planner=${planner}`
     });
     
     //variable qui transforme la chaîne de caractère du fetch en objet javascript 
-    var response = await rawData.json();
+    var tableDataResponse = await rawTableData.json();
 
     //sauvegarde du token en local (non crypté) + JSON.stringify pour convertir en json lors de la sauvegarde
-    let {token} = response.userSaved
-    await AsyncStorage.setItem('userToken', JSON.stringify(token))
-    props.sendUserToken(token)
-  }
-
-
-
-  // ---------REGEX--------- 
-  // ---------VARIABLE D'ETAT REGEX--------- 
-  const [errorEmail, setErrorEmail] = useState("");
-  const [errorPassword, setErrorPassword] = useState("");
-  const [errorConfirmPassword, setErrorConfirmPassword] = useState("");
-  const [errorCheckPassword, setErrorCheckPassword] = useState("");
-  const [errorImage, setErrorImage] = useState("");
-  const [errorLastname, setErrorLastname] = useState("");
-  const [errorFirstname, setErrorFirstname] = useState("");
-  const [errorUserAddress, setErrorUserAddress] = useState("");
-  const [errorPhoneNumber, setErrorPhoneNumber] = useState("");
-  const [errorDateOfBirth, setErrorDateOfBirth] = useState("");
-
-
-
-  // Messages d'erreur pour les champs obligatoires
-  const connexionValidation = () => {
-
-    if (email && email.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/) && password && password.match(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,}$/) && confirmPassword && password === confirmPassword && firstname && lastname && address && phoneNumber && phoneNumber.match(/^(0)[1-9](\d{2}){4}$/) && dateOfBirth) {
-      handleSignUp(navigation.navigate('Home'))
-      } else {
-  
-    if (email === "") {
-      setErrorEmail("*Email requis!")
-      } else if (!email.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/)) {
-      setErrorEmail("*Format de l'email invalide!")
-      } else {
-      setErrorEmail("")
-      }
-
-    if (password === "") {
-      setErrorPassword("*Mot de passe requis!")
-      } else if (!password.match(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,}$/)) {
-      setErrorPassword("*Mot de passe : minimum 5 charactères, une lettre et un nombre!")
-      } else { 
-      setErrorPassword("")
-      }
-
-    if (confirmPassword === "") {
-      setErrorConfirmPassword("*Confirmation du mot de passe requise!  ")
-      } else {
-      setErrorConfirmPassword("")
-      }
-
-    if (visible === true) {
-      setErrorImage("*Ajout d'une photo obligatoire!")
-    } else {
-      setErrorImage("")
-    }
-
-    if (password !== confirmPassword) {
-      setErrorCheckPassword("*Les mots de passe ne correspondent pas.")
-      } else{
-      setErrorCheckPassword("")
-      }
-
-    if (lastname === "") {
-      setErrorLastname("*Nom de famille requis!")
-      } else {
-      setErrorLastname("")
-      }
-
-    if (firstname === "") {
-      setErrorFirstname("*Prénom requis!")
-      } else {
-      setErrorFirstname("")
-      }
-
-    if (address === "") {
-      setErrorUserAddress("*Adresse requise!")
-      } else {
-      setErrorUserAddress("")
-      }
-
-    if (phoneNumber === "") {
-      setErrorPhoneNumber("*Numéro de mobile requis!")
-      } else if (!phoneNumber.match(/^(0)[1-9](\d{2}){4}$/)) {
-      setErrorPhoneNumber("*Le numéro de mobile doit être au format '0123456789'!")
-      } else {
-      setErrorPhoneNumber("")
-      }
-
-    if (dateOfBirth === moment().subtract(18, "years")) {
-      setErrorDateOfBirth("*Champ requis!")
-      } else {
-      setErrorDateOfBirth("")
-      }  
+    let {tableId} = tableDataResponse.result._id
+    await AsyncStorage.setItem('tableId', JSON.stringify(tableId))
+    props.sendTableId(tableDataResponse.newTable._id);
+    props.navigation.navigate('MyTable');
     }
   }
 
@@ -231,11 +148,16 @@ function CreateScreen(props) {
 
 
 
-
-
-  // ---------DATEPICKER---------
-  const format = 'DD/MM/YYYY HH:MM'
+  // ---------DATEPICKER FORMAT D'AFFICHAGE---------
   const minDate = moment().add(1, 'days').toDate()
+  const formattedDate = dateOfEvent.toLocaleString("fr-FR", options)
+  const options = {day: '2-digit', month: '2-digit', year: '2-digit'}
+
+  const dateUpdate = (event, selectedDate) => {
+    const currentDate = selectedDate || dateOfEvent;
+    setDateOfEvent(currentDate);
+    setDateValue(true);
+  }
 
 
 
@@ -244,29 +166,33 @@ function CreateScreen(props) {
       <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : "height"}>
         <Appbarmodel></Appbarmodel>
 
-          <ScrollView style={{backgroundColor: '#ffffed'}}>
+          <ScrollView style={{backgroundColor: '#ffffed', marginBottom: 60}}>
             <TouchableOpacity onPress={Keyboard.dismiss}>
 
               <View style={styles.container}>
 
-              <View style={styles.date}>
-                  <Text style={{color: '#756969', fontSize: 16, marginRight: 22}} >Date/Heure:*</Text>
+              <Text
+                  style={{color: '#FFC960', fontSize: 18, fontStyle: 'italic', alignSelf: 'center', marginTop: 25, marginBottom: 25}}>
+                  - Informations de la table -
+                </Text>
+
+                <View style={styles.date}>
+                  <Text style={{color: '#756969', fontSize: 16, marginRight: 40}} >Date/Heure:*</Text>
                   <DatePicker
                   onSubmitEditing={() => {secondTextInput.current.focus()}}
                   customStyles={datepicker}
                   date={dateOfEvent}
                   locale='fr'
                   mode="datetime"
-                  format={format}
+                  format={formattedDate}
                   minDate={minDate}
                   confirmBtnText="Confirmer"
                   cancelBtnText="Annuler"
+                  minuteInterval={15}
                   useNativeDriver={true}
-                  onDateChange={(date) => {setDateOfEvent(date);}}
+                  onDateChange={dateUpdate}
                   value={dateOfEvent} />
                 </View>
-
-                <Text style={styles.errorText}>{errorEmail}</Text>
 
                 <TextInput 
                 style={styles.input} 
@@ -280,8 +206,6 @@ function CreateScreen(props) {
                 onChangeText={(value) => setTitleEvent(value)}
                 value={titleEvent} />
 
-                <Text style={styles.errorText}>{errorEmail}</Text>
-
                 <TextInput 
                 style={styles.input} 
                 theme={themes.input}
@@ -293,8 +217,6 @@ function CreateScreen(props) {
                 placeholder="La Brasserie du voisin"
                 onChangeText={(value) => setRestaurantName(value)}
                 value={restaurantName} />
-
-                <Text style={styles.errorText}>{errorPassword}</Text>
 
                 <TextInput 
                 style={styles.input} 
@@ -308,13 +230,10 @@ function CreateScreen(props) {
                 onChangeText={(value) => setRestaurantAddress(value)}
                 value={restaurantAddress} />
 
-                <Text style={styles.errorText}>{[errorConfirmPassword, errorCheckPassword]}</Text>
-
                 <Dropdown
                 style={[styles.dropdown, showDropDown && { borderColor: '#0E9BA4' }]}
                 placeholderStyle={styles.placeholderStyle}
                 selectedTextStyle={styles.selectedTextStyle}
-                containerStyle={styles.containerStyle}
                 activeColor={'#FFC960'}
                 data={restaurantTypeList}
                 maxHeight={200}
@@ -326,8 +245,6 @@ function CreateScreen(props) {
                 onBlur={() => setShowDropDown(false)}
                 onChange={item => {setFoodType(item.value); setShowDropDown(false)}}
                 />
-
-                <Text style={styles.errorText}>{errorLastname}</Text>
 
                 <TextInput 
                 style={styles.presentationEvent} 
@@ -342,14 +259,10 @@ function CreateScreen(props) {
                 onChangeText={(value) => setPresentationEvent(value)}
                 value={presentationEvent} />
 
-                <Text style={styles.errorText}>{errorFirstname}</Text>
-
-
                 <Dropdown
                 style={[styles.dropdown, showDropDown && { borderColor: '#0E9BA4' }]}
                 placeholderStyle={styles.placeholderStyle}
                 selectedTextStyle={styles.selectedTextStyle}
-                containerStyle={styles.containerStyle}
                 activeColor={'#FFC960'}
                 data={ageRangeList}
                 maxHeight={200}
@@ -361,8 +274,6 @@ function CreateScreen(props) {
                 onBlur={() => setShowDropDown(false)}
                 onChange={item => {setAgeRange(item.value); setShowDropDown(false)}}
                 />
-
-                <Text style={styles.errorText}>{errorUserAddress}</Text>
 
                 <View style={{ flexDirection: "column", alignItems: "flex-end", marginTop: 30 }}>
 
@@ -382,15 +293,13 @@ function CreateScreen(props) {
 
                 </View>
 
-                <Text style={styles.errorText}>{errorPhoneNumber}</Text>
-
                 <Button
                   style={{width: "80%", marginBottom: 15, marginTop: 70, borderRadius: 10, justifyContent: 'center', backgroundColor: '#0E9BA4', height: 60}}
                   labelStyle={{color: '#FFC960', fontSize: 22, fontWeight: 'bold'}}
                   uppercase={false}
                   mode="contained"
-                  onPress={() => {connexionValidation()}}>              
-                  Créer une nouvelle table
+                  onPress={() => {createTable()}}>              
+                  Créer ma table
                 </Button>
 
                 <StatusBar style="auto" hidden={false} />
@@ -441,7 +350,9 @@ const styles = ({
     borderWidth: 1,
     borderColor: 'grey',
     height: 57,
-    fontColor: 'red'
+    fontColor: 'red',
+    marginBottom: 5,
+    marginTop: 5
   },
   placeholderStyle: {
     color: 'grey',
@@ -468,7 +379,7 @@ const styles = ({
   },
   presentationEvent:{
     width: "80%",
-    marginBottom: 5,
+    marginBottom: 10,
     backgroundColor: '#FFFFFF',
     minHeight: 150
   }
@@ -477,7 +388,7 @@ const styles = ({
 const datepicker = {
   dateIcon: {
     position: 'absolute',
-    left: '85%'                     
+    left: '77%'
   },
   dateInput: {
     borderWidth: 0,
@@ -485,7 +396,7 @@ const datepicker = {
   dateText: {
     fontSize: 17,
     color: 'black',
-    left: -18
+    left: -38
   },
   btnTextConfirm: {
     color: '#0E9BA4'
@@ -503,17 +414,24 @@ const themes = ({
 })
 
 
-// fonction du composant de présentation à appeler pour effectuer l'ordre
+// fonction qui rappel l'information définie dans le réduceur
+function mapStateToProps(state) {
+  return {
+    userToken: state.userToken
+  }
+}
+
+// fonction du composant de présentation de l'ordre
 function mapDispatchToProps(dispatch) {
   return {
-    sendUserToken: function(userToken) {
-      dispatch({type: 'registerToken', userToken})
+    sendTableId: function(tableId) {
+      dispatch({type: 'registerTableId', tableId: tableId})
     }
   }
 }
 
 // composant conteneur
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(CreateScreen);

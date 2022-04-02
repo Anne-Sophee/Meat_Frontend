@@ -1,88 +1,89 @@
 import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar'; 
 import { Text, View, ScrollView, KeyboardAvoidingView, TouchableOpacity, Keyboard, Platform } from 'react-native';
-import { TextInput, Button, Avatar } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import { Card } from 'react-native-paper';
 import Appbarmodel from '../navigation/appbar';
+import { connect } from 'react-redux';
 
 
-export default (HomeScreen) => {
 
-  const navigation = useNavigation();
+function EventScreen(props) {
 
-  
+  // ---------VARIABLE D'ETAT---------
+  const [eventDataList, setEventDataList] = useState([]);
+
+
+
+  // ---------RÉCCUPÉRATION DES DONNÉES DES EVENTS---------
+  useEffect(async () => {
+
+    var rawResponse = await fetch(`https://newmeat.herokuapp.com/my-events/${props.userToken}`);
+    var response = await rawResponse.json();
+    setEventDataList(response.result);
+
+  }, [])
+
+
+
+  // ---------MODÈLE DE TABLES À AFFICHER---------
+  var eventList = eventDataList.map((e, i) => {
+
+    // affichage de la date et heure de l'évènement
+    let dateParse = new Date(e.date);
+    let formattedDate = dateParse.toLocaleDateString("fr-FR", {timeZone: "UTC", weekday: "long", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit"});
+    formattedDate = formattedDate[0].toUpperCase() + formattedDate.slice(1)
+
 
     return (
 
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
-          <Appbarmodel></Appbarmodel>
+        <Card key={i} onPress={() => { props.navigation.navigate("MyTable"), props.saveTableId(e._id) }} style={{backgroundColor: '#ffffed'}}>
+          <Card.Content style={styles.event}>
+            <View>
 
-            <ScrollView style={{backgroundColor: '#ffffed'}}>
-                <TouchableOpacity onPress={Keyboard.dismiss}>
+              <View style={{marginLeft: 20}}>
+                  <Text style={{fontWeight: 'bold', fontSize: 18}}>{e.title}</Text>
+                  <Text style={{fontSize: 14}}>{formattedDate}</Text>
+              </View>
 
-                    <View style={styles.container}>
-
-                        <Button
-                          style={{width: "80%", marginBottom: 45, marginTop: 35, borderRadius: 10, justifyContent: 'center', backgroundColor: '#FFFFFF', height: 60}}
-                          labelStyle={{color: '#0E9BA4', fontSize: 22, fontWeight: 'bold'}}
-                          uppercase={false}
-                          mode="contained"
-                          onPress={() => navigation.navigate('Join')}>              
-                          Rechercher
-                        </Button>
-
-                        <TextInput style={styles.input} theme={themes.input} mode="outlined" label="Où ?*" placeholder="Paris 17" />
-
-                        <TextInput style={styles.input} theme={themes.input} mode="outlined" label="Quand ?" placeholder="JJ/MM/AAAA" />
-
-                        <TextInput style={styles.input} theme={themes.input} mode="outlined" label="De quoi avez-vous envie ?" placeholder="Italien..." />
-
-                        <StatusBar style="auto" hidden={false} />
-
-                    </View>
-
-
-                    <View style={styles.event}>
-
-                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                            <Avatar.Image size={40} style={{marginRight: 10, backgroundColor: '#FFFFFF'}} source={require('../assets/avatar.png')}/>
-                                <View>
-                                    <Text style={{fontWeight: 'bold', fontSize: 18}}>Table de Dominique</Text>
-                                    <Text style={{fontSize: 14}}>Vendredi 21 janvier 2022 à 12h15</Text>
-                                </View>
-                        </View>
-
-                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                            <Avatar.Icon size={30} style={styles.account} icon='account' />
-                            <Avatar.Icon size={30} style={styles.account} icon='account' />
-                            <Avatar.Icon size={30} style={styles.account} icon='account' />
-                            <Avatar.Icon size={30} style={styles.account} icon='account' />
-                            <Avatar.Icon size={30} style={styles.account} icon='account' />
-                            <Avatar.Icon size={30} style={styles.account} icon='account' />
-                        </View>
-
-                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                            <Avatar.Icon size={50} icon='storefront-outline' color='#FFC960' style={{backgroundColor:'#fff6cc'}}/>
-                            <View style={{marginRight: 25}}>
-                                <Text >Restaurant</Text>
-                                <Text style={{color: '#0E9BA4', fontWeight: 'bold'}}>Taiyo Ramen</Text>
-                            </View>
-                            <Avatar.Icon size={50} icon="food-fork-drink" color='#FFC960' style={{backgroundColor:'#fff6cc'}}/>
-                            <Text style={{fontWeight: 'bold'}}>Japonais</Text>
-                        </View>
-
-                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                            <Avatar.Icon size={50} icon="walk" color='#FFC960' style={{backgroundColor:'#fff6cc'}} />
-                            <Text style={{fontWeight: 'bold'}}>à 150 m de bureau</Text>
-                        </View>
-
-                    </View>
-
-                </TouchableOpacity>
-            </ScrollView>
-        </KeyboardAvoidingView>
+            </View>
+          </Card.Content>
+        </Card>
     );
+  })
+
+
+
+  return (
+
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
+      <Appbarmodel></Appbarmodel>
+
+        <ScrollView style={{backgroundColor: '#ffffed'}}>
+            <TouchableOpacity onPress={Keyboard.dismiss}>
+
+                <View style={styles.container}>
+
+                  <Text
+                    style={{color: '#FFC960', fontSize: 18, fontStyle: 'italic', alignSelf: 'center', marginTop: 25, marginBottom: 25}}>
+                    - Liste des évènements -
+                  </Text>
+
+                  <StatusBar style="auto" hidden={false} />
+
+                </View>
+
+
+                <View>
+                  {eventList}
+                </View>
+
+            </TouchableOpacity>
+        </ScrollView>
+    </KeyboardAvoidingView>
+  );
+
 }
+
 
 
 
@@ -91,37 +92,41 @@ const styles = ({
     flex: 1,
     alignItems: 'center',
     backgroundColor: '#ffffed',
-    marginBottom: 40
+    marginBottom: 10
   },
   event: {
       flex: 1,
-      alignItems: 'center',
       alignSelf: 'center',
       backgroundColor: '#fff6cc',
-      width: '80%',
+      width: '90%',
       borderRadius: 20,
-      paddingTop: 20,
-      paddingBottom: 5,
-      marginBottom: 20
-  },
-  account: {
-    marginTop: 10,
-    marginHorizontal: 3,
-    borderWidth: 1,
-    borderColor: '#6c757d',
-    backgroundColor: '#FFFFFF'
-  },
-  input: {
-    width: "80%",
-    marginBottom: 15,
-    backgroundColor: '#FFFFFF'
-  },
-  
+      padding: 15,
+      marginVertical: 8
+  }
 });
 
-const themes = ({
-  input: {
-    roundness: 7, 
-    colors: {primary: '#0E9BA4'}
+
+
+// fonction qui rappel l'information définie dans le réduceur
+function mapStateToProps(state){
+  return {
+    userToken : state.userToken
   }
-})
+}
+
+
+// fonction du composant de présentation à appeler pour effectuer l'ordre
+function mapDispatchToProps(dispatch) {
+  return {
+    saveTableId: function (tableId) {
+      dispatch({ type: "saveTableId", tableId: tableId })
+    }
+  }
+}
+
+
+// composant conteneur
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(EventScreen);

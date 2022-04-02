@@ -1,13 +1,12 @@
 import React, { useRef, useState } from 'react';
 import { StatusBar } from 'expo-status-bar'; 
-import { Text, View, ScrollView, KeyboardAvoidingView, TouchableOpacity, Keyboard, Platform, SafeAreaView } from 'react-native';
+import { Text, View, ScrollView, KeyboardAvoidingView, TouchableOpacity, Keyboard, Platform } from 'react-native';
 import { TextInput, Button, RadioButton, Avatar } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import DatePicker from 'react-native-datepicker';
 import moment from 'moment';
 import * as ImagePicker from 'expo-image-picker';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { connect } from 'react-redux';
 
 
@@ -301,53 +300,6 @@ function RegisterScreen(props) {
                 value={firstname} />
 
                 <Text style={styles.errorText}>{errorFirstname}</Text>
-
-                {/* <SafeAreaView
-                style={styles.input}>
-                <GooglePlacesAutocomplete
-                styles={{
-                  container: {
-                    flex: 1                    
-                  },
-                  textInput: {
-                    height: 60,
-                    width: '80%',
-                    borderRadius: 7,
-                    paddingLeft: 12,
-                    paddingRight: 12,
-                    borderWidth: 1,
-                    borderColor: "grey",
-                    fontSize: 16
-                  },
-                  listView: {
-                    borderWidth: 1,
-                    borderColor: "#ddd",
-                    backgroundColor: "#fff",
-                    marginHorizontal: 200,
-                    elevation: 5,
-                  },
-                  description: {
-                    fontSize: 16
-                  },
-                  row: {
-                    padding: 20,
-                    height: 58
-                  }
-                }}
-                theme={themes.input}
-                minLength={2}
-                returnKeyType={'Rechercher'}
-                listViewDisplayed='auto'
-                nearbyPlacesAPI='GooglePlacesSearch'
-                currentLocation={true}
-                fetchDetails={true}
-                placeholder='56 boulevard Pereire, 75017 Paris'
-                onPress={(data, details = null) => {console.log(data, details);}}
-                query={{key: 'AIzaSyDykYpCt5BSj6QCbOJzhdCATgHmkQR-gNk', language: 'fr'}}
-                />
-                </SafeAreaView> */}
-
-
 
                 <TextInput
                 style={styles.input} 

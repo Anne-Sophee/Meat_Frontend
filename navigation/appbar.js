@@ -29,7 +29,7 @@ export default function Appbarmodel() {
 
       <Appbar.Action 
         size={30}
-        icon="mail" 
+        icon="comment-processing" 
         color='#0E9BA4'
         style={styles.icon} 
         onPress={() => navigation.navigate('Message')}
@@ -41,6 +41,14 @@ export default function Appbarmodel() {
         color='#0E9BA4'
         style={styles.icon} 
         onPress={() => navigation.navigate('Event')} 
+      />
+
+      <Appbar.Action 
+        size={30}
+        icon="account-group" 
+        color='#0E9BA4'
+        style={styles.icon} 
+        onPress={() => navigation.navigate('Buddies')} 
       />
 
       <Appbar.Action 
