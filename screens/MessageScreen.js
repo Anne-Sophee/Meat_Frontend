@@ -48,7 +48,7 @@ export default (MessageScreen) => {
 
 
                 <Button
-                  style={{width: "80%", marginTop: 50, marginBottom: 15, borderRadius: 10, justifyContent: 'center', backgroundColor: '#0E9BA4', height: 60}}
+                  style={{width: "80%", marginTop: 200, marginBottom: 15, borderRadius: 10, justifyContent: 'center', backgroundColor: '#0E9BA4', height: 60}}
                   labelStyle={{color: '#FFC960', fontSize: 22, fontWeight: 'bold'}}
                   uppercase={false}
                   mode="contained"

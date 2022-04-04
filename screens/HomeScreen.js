@@ -18,9 +18,10 @@ function HomeScreen(props) {
   const [dateOfEvent, setDateOfEvent] = useState(new Date(Date.now()));
   const [foodType, setFoodType] = useState('');
   const [showDropDown, setShowDropDown] = useState(false);
-  const isFocused = useIsFocused();
   const [tableDataList, setTableDataList] = useState([]);
   const [dateFilter, setDateFilter] = useState(0) // Filtre la date
+
+  const isFocused = useIsFocused();
 
 
   
@@ -60,7 +61,6 @@ function HomeScreen(props) {
         let rawResponse = await fetch(`https://newmeat.herokuapp.com/search-table`);
         let response = await rawResponse.json();
         setTableDataList(response.result)
-        console.log('response.result:', response.result[1]._id)
       };
       getTableList()
     }
@@ -109,11 +109,11 @@ function HomeScreen(props) {
     let dateParse = new Date(e.date);
     let formattedDate = dateParse.toLocaleDateString("fr-FR", {timeZone: "UTC", weekday: "long", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit"});
     formattedDate = formattedDate[0].toUpperCase() + formattedDate.slice(1)
-    var redirect = false
 
     // redirection vers la screen adaptée en fonction du statut du user
     const onCardClick = () => {
 
+      var redirect = false;
       let guestCheck = e.guests.some(el => el.token === props.userToken)
       if (e.planner === props.userToken || guestCheck === true) {
         redirect = true

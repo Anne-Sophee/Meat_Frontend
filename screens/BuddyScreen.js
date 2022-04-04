@@ -16,20 +16,20 @@ function BuddyScreen(props) {
   const [currentUserStatus,setCurrentUserStatus] =useState([]);
 
 
-  // useEffect( () => {
-  //   const abortController = new AbortController();
+  useEffect( () => {
+    const abortController = new AbortController();
 
-  //   (async () => {
-  //     let rawResponse = await fetch(`https://newmeat.herokuapp.com/interactions/list-related-users/${props.userToSend}`)
-  //     let response = await rawResponse.json();
-  //     setCurrentUserStatus(response.currentUser.buddies)
-  //     setRelations([...response.listOfRelations])
-  //   })()
+    (async () => {
+      let rawResponse = await fetch(`https://newmeat.herokuapp.com/interactions/list-related-users/${props.userToSend}`)
+      let response = await rawResponse.json();
+      setCurrentUserStatus(response.currentUser.buddies)
+      setRelations([...response.listOfRelations])
+    })()
 
-  //   return () => {
-  //     abortController.abort();}
+    return () => {
+      abortController.abort();}
 
-  // }, [relations]);
+  }, [relations]);
 
 
   useEffect( () => {

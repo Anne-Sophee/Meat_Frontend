@@ -58,7 +58,7 @@ function EventScreen(props) {
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
       <Appbarmodel></Appbarmodel>
 
-        <ScrollView style={{backgroundColor: '#ffffed'}}>
+        <ScrollView style={{backgroundColor: '#ffffed', marginBottom: 60}}>
             <TouchableOpacity onPress={Keyboard.dismiss}>
 
                 <View style={styles.container}>

@@ -19,6 +19,8 @@ import ConversationScreen from './screens/ConversationScreen';
 import BuddyScreen from './screens/BuddyScreen';
 
 import userToken from './reducers/userToken';
+import tableId from './reducers/events';
+import conversationId from "./reducers/conversation";
 
 export default function App() {
 
@@ -26,7 +28,7 @@ export default function App() {
   const Stack = createStackNavigator(); 
 
   //variable de création du store qui appelle les reducers
-  const Store = createStore(combineReducers({userToken}));
+  const Store = createStore(combineReducers({userToken, tableId, conversationId}));
   
   //fonction fléchée qui fait évoluer l'opacité à partir de l'opacité existante - effet fondue de page en page
   const forFade = ({ current }) => ({ 
